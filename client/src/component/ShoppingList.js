@@ -1,22 +1,27 @@
 import React, { Component } from 'react';
 import { Container, Table, Button } from 'reactstrap';
-
+import {connect} from 'react-redux';
+import {getItems} from '../actions/itemAction';
+import PropTypes from 'prop-types';
 class ShoppingList extends Component {
+
     constructor(props){
         super(props);
-
         this.state = {
             items:[]
         }
     }
 
+    componentDidMount(){
+        this.props.getItems();
+        this.state.items = this.props.item.items;
+    }
+
+    removeItem(e){
+        console.log('e',e);   
+    }
+
     render() {
-        this.state.items =[
-            { id: 1, name: 'Yashwant' },
-            { id: 2, name: 'Ram' },
-            { id: 3, name: 'Shyam' },
-            { id: 4, name: 'Mohan' }
-        ];
         const { items } = this.state;
 
         return (
@@ -37,19 +42,23 @@ class ShoppingList extends Component {
         );
     }
 
-    renderRows(props){
+    renderRows(data){
         return (
-            <tr key={props.id}>
-                <th scope="row">{props.id}</th>
-                <td>{props.name}</td>
-                <td><Button onClick={()=>{ this.removeItem(props.id) }} color="danger">&times;</Button></td>
+            <tr key={data.id}>
+                <th scope="row">{data.id}</th>
+                <td>{data.name}</td>
+                <td><Button onClick={function(){ this.removeItem(data) }} color="danger">&times;</Button></td>
             </tr>
         );
     }
-
-    removeItem(id){
-        alert(id);
-    }
 }
 
-export default ShoppingList;
+// export default ShoppingList;
+ShoppingList.propTypes = {
+    getItems: PropTypes.func.isRequired,
+    item:PropTypes.object.isRequired
+}
+
+const mapStateToProps = (state)=>({item:state.item});
+
+export default connect(mapStateToProps, {getItems})(ShoppingList);
